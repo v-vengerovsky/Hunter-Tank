@@ -10,6 +10,7 @@ namespace HunterTank
 	{
 		private GameData _gameData;
 		private ScoreSystem _scoreSysytem;
+		private PlayerController _playerController;
 
 		public event Action<int> OnScore
 		{
@@ -22,6 +23,7 @@ namespace HunterTank
 			_gameData = gameData;
 			_scoreSysytem = new ScoreSystem();
 			_scoreSysytem.OnLoose += Lost;
+			_playerController = _gameData.GetDefaultPlayerController(_gameData.transform);
 		}
 
 		public void Update()
