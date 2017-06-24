@@ -36,16 +36,26 @@ namespace HunterTank
 
 		private Vector3 CurrentDirection
 		{
-			get { return -_rigidBody.transform.right; }
+			get { return transform.forward; }
 			set
 			{
-				if (Vector3.Angle(value, -_rigidBody.transform.right) < Constants.CutoffValue)
+				if (Vector3.Angle(value, transform.forward) < Constants.CutoffValue)
 				{
 					return;
 				}
 
 				value.y = 0;
-				_rigidBody.transform.right = -value.normalized;
+				transform.forward = value.normalized;
+			}
+		}
+
+		private Vector3 CurrentVelocity
+		{
+			get { return _rigidBody.velocity; }
+			set
+			{
+				//value.y = _rigidBody.velocity.y;
+				_rigidBody.velocity = value;
 			}
 		}
 
@@ -85,7 +95,7 @@ namespace HunterTank
 				targetSpeed = _maxSpeed;
 			}
 
-			Vector3 temp = _rigidBody.velocity;
+			Vector3 temp = CurrentVelocity;
 			temp.y = 0;
 			float currentSpeed = temp.magnitude;
 			float lerpSpeed = _speedChangeSpeed * Mathf.Abs((targetSpeed - currentSpeed) / _maxSpeed);
@@ -93,11 +103,11 @@ namespace HunterTank
 
 			if (newSpeed > Constants.CutoffValue)
 			{
-				_rigidBody.velocity = CurrentDirection * newSpeed;
+				CurrentVelocity = CurrentDirection * newSpeed;
 			}
 			else
 			{
-				_rigidBody.velocity = Vector3.zero;
+				CurrentVelocity = Vector3.zero;
 			}
 		}
 	}

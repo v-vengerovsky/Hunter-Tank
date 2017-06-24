@@ -11,5 +11,7 @@ namespace HunterTank
 		public const float MinAngleBetweenDirections = 1f;
 		public const string MoveXAxisName = "Horizontal";
 		public const string MoveYAxisName = "Vertical";
+		public const string SwitchGunAxisName = "SwitchGun";
+		public const string FireAxisName = "Fire1";
 	}
 }

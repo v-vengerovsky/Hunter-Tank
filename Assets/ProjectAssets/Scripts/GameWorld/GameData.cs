@@ -7,7 +7,11 @@ namespace HunterTank
 	public class GameData : MonoBehaviour
 	{
 		[SerializeField]
-		private List<PlayerController> _playerControllers;
+		private Camera _camera;
+		[SerializeField]
+		private Transform _spawnPoint;
+		[SerializeField]
+		private PlayerController _playerControllerPrefab;
 		[SerializeField]
 		private List<EnemyController> _enemyControllers;
 
@@ -20,28 +24,23 @@ namespace HunterTank
 			get { return _instance; }
 		}
 
-		public PlayerController GetNextPlayerController(Transform parent = null)
+		public PlayerController GetPlayerController(Transform parent = null)
 		{
-			_currentPlayercontrollerIndex++;
-						
-			return GetPlayerControllerAt(_currentPlayercontrollerIndex,parent);
-		}
+			var result = Instantiate<PlayerController>(_playerControllerPrefab);
 
-		public PlayerController GetPreviousPlayerController(Transform parent = null)
-		{
-			_currentPlayercontrollerIndex--;
+			if (parent != null)
+			{
+				result.transform.SetParent(parent);
+			}
 
-			return GetPlayerControllerAt(_currentPlayercontrollerIndex, parent);
-		}
-
-		public PlayerController GetDefaultPlayerController(Transform parent = null)
-		{
-			return GetPlayerControllerAt(0, parent);
+			result.transform.localScale = Vector3.one;
+			result.transform.position = _spawnPoint.position;
+			return result;
 		}
 
 		public EnemyController GetRandomEnemyController(Transform parent = null)
 		{
-			int randomIndex = Random.Range(0, _playerControllers.Count);
+			int randomIndex = Random.Range(0, _enemyControllers.Count);
 
 			var result = Instantiate<EnemyController>(_enemyControllers[randomIndex]);
 
@@ -50,27 +49,13 @@ namespace HunterTank
 				result.transform.SetParent(parent);
 			}
 
+			result.transform.localScale = Vector3.one;
 			return result;
 		}
 
 		private void Awake()
 		{
 			_instance = this;
-
-		}
-
-		private PlayerController GetPlayerControllerAt(int index, Transform parent)
-		{			
-			index = (int)(Mathf.Repeat(index, _playerControllers.Count));
-
-			var result = Instantiate<PlayerController>(_playerControllers[index]);
-
-			if (parent != null)
-			{
-				result.transform.SetParent(parent);
-			}
-
-			return result;
 
 		}
 	}

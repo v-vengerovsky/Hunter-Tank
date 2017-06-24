@@ -23,7 +23,7 @@ namespace HunterTank
 			_gameData = gameData;
 			_scoreSysytem = new ScoreSystem();
 			_scoreSysytem.OnLoose += Lost;
-			_playerController = _gameData.GetDefaultPlayerController(_gameData.transform);
+			_playerController = _gameData.GetPlayerController();
 		}
 
 		public void Update()

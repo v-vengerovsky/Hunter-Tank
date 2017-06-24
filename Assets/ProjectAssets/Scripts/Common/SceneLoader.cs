@@ -345,11 +345,15 @@ public class SceneLoader : MonoBehaviour
 	{
 		yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
+		SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+
 		if (callback != null)
 		{
 			callback.Invoke();
 		}
-        if ( OnSceneLoadCompleted != null ) {
+
+        if ( OnSceneLoadCompleted != null )
+		{
             OnSceneLoadCompleted(sceneName);
         }
 	}
