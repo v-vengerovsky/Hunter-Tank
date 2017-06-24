@@ -24,6 +24,7 @@ namespace HunterTank
 			_scoreSysytem = new ScoreSystem();
 			_scoreSysytem.OnLoose += Lost;
 			_playerController = _gameData.GetPlayerController();
+			_playerController.OnPositionChange += _gameData.SetPosition;
 		}
 
 		public void Update()
@@ -33,7 +34,8 @@ namespace HunterTank
 
 		public void Dispose()
 		{
-			
+			_playerController.OnPositionChange -= _gameData.SetPosition;
+
 		}
 
 		private void Lost()

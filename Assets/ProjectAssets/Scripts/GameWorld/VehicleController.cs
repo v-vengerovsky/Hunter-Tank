@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,14 @@ namespace HunterTank
 		private Rigidbody _rigidBody;
 
 		private Vector3 _targetDirection;
+		private Vector3 _velocity;
+		private event Action<Vector3> _onPositionChange;
+
+		public event Action<Vector3> OnPositionChange
+		{
+			add { _onPositionChange += value; }
+			remove { _onPositionChange -= value; }
+		}
 
 		public Vector3 TargetDirection
 		{
@@ -51,12 +60,17 @@ namespace HunterTank
 
 		private Vector3 CurrentVelocity
 		{
-			get { return _rigidBody.velocity; }
+			get { return _velocity; }
 			set
 			{
-				//value.y = _rigidBody.velocity.y;
-				_rigidBody.velocity = value;
+				_velocity = value;
 			}
+		}
+
+		private Vector3 Position
+		{
+			get { return transform.position; }
+			set { transform.position = value; }
 		}
 
 		public bool Accelerate
@@ -69,10 +83,11 @@ namespace HunterTank
 
 		}
 
-		private void Update()
+		private void FixedUpdate()
 		{
 			UpdateDirection();
 			UpdateSpeed();
+			UpdatePosition();
 		}
 
 		private void UpdateDirection()
@@ -98,8 +113,8 @@ namespace HunterTank
 			Vector3 temp = CurrentVelocity;
 			temp.y = 0;
 			float currentSpeed = temp.magnitude;
-			float lerpSpeed = _speedChangeSpeed * Mathf.Abs((targetSpeed - currentSpeed) / _maxSpeed);
-			float newSpeed = Mathf.Lerp(currentSpeed, targetSpeed, lerpSpeed);
+			float direction =  targetSpeed - currentSpeed;
+			float newSpeed = currentSpeed + _speedChangeSpeed * Mathf.Sign(direction) * Time.fixedDeltaTime;
 
 			if (newSpeed > Constants.CutoffValue)
 			{
@@ -108,6 +123,17 @@ namespace HunterTank
 			else
 			{
 				CurrentVelocity = Vector3.zero;
+			}
+			Debug.LogWarningFormat("currentSpeed:{0}, targetSpeed:{1}, direction:{2}, newSpeed:{3},CurrentVelocity: {4}", currentSpeed, targetSpeed, direction, newSpeed, CurrentVelocity);
+		}
+
+		private void UpdatePosition()
+		{
+			Position = Position + CurrentVelocity * Time.fixedDeltaTime;
+
+			if (_onPositionChange != null)
+			{
+				_onPositionChange(Position);
 			}
 		}
 	}

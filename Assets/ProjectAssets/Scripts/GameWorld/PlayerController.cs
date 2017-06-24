@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,12 @@ namespace HunterTank
 
 		private float _oldSwitchGunAxis;
 		private float _oldFireGunAxis;
+
+		public event Action<Vector3> OnPositionChange
+		{
+			add { _vehicleController.OnPositionChange += value; }
+			remove { _vehicleController.OnPositionChange -= value; }
+		}
 
 		private void Start()
 		{

@@ -53,6 +53,12 @@ namespace HunterTank
 			return result;
 		}
 
+		public void SetPosition(Vector3 position)
+		{
+			position.y = _camera.transform.position.y;
+			_camera.transform.position = position;
+		}
+
 		private void Awake()
 		{
 			_instance = this;

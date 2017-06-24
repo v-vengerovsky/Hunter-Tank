@@ -25,9 +25,9 @@ namespace HunterTank
 			_collider.isTrigger = true;
 		}
 
-		private void Update()
+		private void FixedUpdate()
 		{
-			float currentSpeed = Mathf.Clamp( _rigidbody.velocity.magnitude + Time.deltaTime * _acceleration, _startSpeed, _maxSpeed);
+			float currentSpeed = Mathf.Clamp( _rigidbody.velocity.magnitude + Time.fixedDeltaTime * _acceleration, _startSpeed, _maxSpeed);
 			_rigidbody.velocity = transform.forward * currentSpeed;
 		}
 
