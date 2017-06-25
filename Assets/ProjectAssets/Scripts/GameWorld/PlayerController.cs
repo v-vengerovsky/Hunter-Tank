@@ -6,7 +6,7 @@ using UnityEngine;
 namespace HunterTank
 {
 	[RequireComponent(typeof(VehicleController))]
-	public class PlayerController : MonoBehaviour
+	public class PlayerController : MonoBehaviour,IPosNotifier
 	{
 		[SerializeField]
 		private VehicleController _vehicleController;
@@ -53,5 +53,9 @@ namespace HunterTank
 			_oldFireGunAxis = Input.GetAxis(Constants.FireAxisName);
 		}
 
+		private void Reset()
+		{
+			_vehicleController = GetComponent<VehicleController>();
+		}
 	}
 }

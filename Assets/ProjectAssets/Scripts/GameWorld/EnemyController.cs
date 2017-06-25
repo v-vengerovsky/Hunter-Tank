@@ -6,15 +6,19 @@ namespace HunterTank
 {
 	public class EnemyController : MonoBehaviour
 	{
+		[SerializeField]
+		private VehicleController _vehicleController;
 
-		void Start()
+		public void SetPlayerPosition(Vector3 playerPos)
 		{
-
+			Vector3 targetDir = playerPos - transform.position;
+			targetDir.Normalize();
+			_vehicleController.TargetDirection = targetDir;
 		}
 
-		void Update()
+		private void Reset()
 		{
-
+			_vehicleController = GetComponent<VehicleController>();
 		}
 	}
 }

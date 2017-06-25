@@ -124,7 +124,7 @@ namespace HunterTank
 			{
 				CurrentVelocity = Vector3.zero;
 			}
-			Debug.LogWarningFormat("currentSpeed:{0}, targetSpeed:{1}, direction:{2}, newSpeed:{3},CurrentVelocity: {4}", currentSpeed, targetSpeed, direction, newSpeed, CurrentVelocity);
+			//Debug.LogWarningFormat("name:{0} currentSpeed:{1}, targetSpeed:{2}, direction:{3}, newSpeed:{4},CurrentVelocity: {5}", name, currentSpeed, targetSpeed, direction, newSpeed, CurrentVelocity);
 		}
 
 		private void UpdatePosition()
@@ -135,6 +135,11 @@ namespace HunterTank
 			{
 				_onPositionChange(Position);
 			}
+		}
+
+		private void Reset()
+		{
+			_rigidBody = GetComponent<Rigidbody>();
 		}
 	}
 }

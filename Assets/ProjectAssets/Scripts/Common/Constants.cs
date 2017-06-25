@@ -13,5 +13,8 @@ namespace HunterTank
 		public const string MoveYAxisName = "Vertical";
 		public const string SwitchGunAxisName = "SwitchGun";
 		public const string FireAxisName = "Fire1";
+
+		public const float MinSpawnInterval = 1f;
+		public const int MaxEnemies = 1;
 	}
 }

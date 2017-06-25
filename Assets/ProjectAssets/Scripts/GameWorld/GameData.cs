@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HunterTank
 {
-	public class GameData : MonoBehaviour
+	public class GameData : MonoBehaviour,ISpawnItemSource<EnemyController>
 	{
 		[SerializeField]
 		private Camera _camera;
@@ -13,7 +13,9 @@ namespace HunterTank
 		[SerializeField]
 		private PlayerController _playerControllerPrefab;
 		[SerializeField]
-		private List<EnemyController> _enemyControllers;
+		private List<EnemyController> _enemyControllersPrefabs;
+		[SerializeField]
+		private List<SpawnVolume> _spawnVolumes;
 
 		private int _currentPlayercontrollerIndex = 0;
 
@@ -22,6 +24,12 @@ namespace HunterTank
 		public static GameData Instance
 		{
 			get { return _instance; }
+		}
+
+		public T Spawn<T>(T original) where T : Component
+		{
+			int index = UnityEngine.Random.Range(0, _spawnVolumes.Count);
+			return _spawnVolumes[index].Spawn<T>(original);
 		}
 
 		public PlayerController GetPlayerController(Transform parent = null)
@@ -38,19 +46,11 @@ namespace HunterTank
 			return result;
 		}
 
-		public EnemyController GetRandomEnemyController(Transform parent = null)
+		public EnemyController GetItem()
 		{
-			int randomIndex = Random.Range(0, _enemyControllers.Count);
+			int randomIndex = Random.Range(0, _enemyControllersPrefabs.Count);
 
-			var result = Instantiate<EnemyController>(_enemyControllers[randomIndex]);
-
-			if (parent != null)
-			{
-				result.transform.SetParent(parent);
-			}
-
-			result.transform.localScale = Vector3.one;
-			return result;
+			return _enemyControllersPrefabs[randomIndex];
 		}
 
 		public void SetPosition(Vector3 position)
