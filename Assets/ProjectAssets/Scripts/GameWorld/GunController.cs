@@ -72,7 +72,7 @@ namespace HunterTank
 		private void TryToAim()
 		{
 			Ray ray = new Ray(CurrentGun.RaycastTransform.position, CurrentGun.RaycastTransform.forward);
-			Debug.DrawRay(CurrentGun.RaycastTransform.position, CurrentGun.RaycastTransform.forward * Constants.RayLengthForAiming,Color.red,5f);
+			//Debug.DrawRay(CurrentGun.RaycastTransform.position, CurrentGun.RaycastTransform.forward * Constants.RayLengthForAiming,Color.red,5f);
 			RaycastHit[] hits = Physics.RaycastAll(ray, Constants.RayLengthForAiming);
 			EnemyController enemy;
 
@@ -86,7 +86,7 @@ namespace HunterTank
 					return;
 				}
 			}
-			Debug.LogWarning("Default forward");
+
 			CurrentGun.RotationTransform.forward = CurrentGun.RotationTransform.parent.TransformDirection(CurrentGun.DefaultGunForward);
 		}
 

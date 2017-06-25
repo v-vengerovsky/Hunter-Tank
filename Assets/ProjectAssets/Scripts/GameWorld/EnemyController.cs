@@ -39,7 +39,6 @@ namespace HunterTank
 
 			if (_currentHealth <= 0)
 			{
-				Debug.LogWarning("enemy destroyed");
 				Destroy(gameObject);
 			}
 		}
