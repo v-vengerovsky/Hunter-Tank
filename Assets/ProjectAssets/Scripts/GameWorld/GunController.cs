@@ -38,7 +38,6 @@ namespace HunterTank
 			var projectile = Instantiate<Projectile>(CurrentGun.ProjectilePrefab);
 			projectile.transform.position = CurrentGun.FireTransform.position;
 			projectile.transform.rotation = CurrentGun.FireTransform.rotation;
-			//projectile.transform.localScale = Vector3.one;
 			_timeToReload = CurrentGun.ReloadTime;
 		}
 
@@ -52,12 +51,43 @@ namespace HunterTank
 			}
 		}
 
-		private void Update()
+		private void FixedUpdate()
 		{
 			if (_timeToReload > 0)
 			{
-				_timeToReload = Math.Max(0f, _timeToReload - Time.deltaTime);
+				_timeToReload = Math.Max(0f, _timeToReload - Time.fixedDeltaTime);
 			}
+
+			TryToAim();
+		}
+
+		private void Awake()
+		{
+			foreach (var item in _guns)
+			{
+				item.Init();
+			}
+		}
+
+		private void TryToAim()
+		{
+			Ray ray = new Ray(CurrentGun.RaycastTransform.position, CurrentGun.RaycastTransform.forward);
+			Debug.DrawRay(CurrentGun.RaycastTransform.position, CurrentGun.RaycastTransform.forward * Constants.RayLengthForAiming,Color.red,5f);
+			RaycastHit[] hits = Physics.RaycastAll(ray, Constants.RayLengthForAiming);
+			EnemyController enemy;
+
+			for (int i = 0; i < hits.Length; i++)
+			{
+				enemy = hits[i].collider.GetComponent<EnemyController>();
+
+				if (enemy != null)
+				{
+					CurrentGun.RotationTransform.forward = hits[i].point - CurrentGun.RotationTransform.position;
+					return;
+				}
+			}
+			Debug.LogWarning("Default forward");
+			CurrentGun.RotationTransform.forward = CurrentGun.RotationTransform.parent.TransformDirection(CurrentGun.DefaultGunForward);
 		}
 
 		private Gun CurrentGun
@@ -84,13 +114,26 @@ namespace HunterTank
 			[SerializeField]
 			private List<Transform> _fireTransforms;
 
+			[SerializeField]
+			private Transform _raycastTransform;
+
+			[SerializeField]
+			private Transform _rotationTransform;
+
 			private int _currentFireTransformIndex;
+			private Vector3 _defaultGunForward;
 
 			public GameObject GunGo { get { return _gunGo; } }
 
 			public Projectile ProjectilePrefab { get { return _projectilePrefab; } }
 
 			public float ReloadTime { get { return _reloadTime; } }
+
+			public Transform RaycastTransform { get { return _raycastTransform; } }
+
+			public Transform RotationTransform { get { return _rotationTransform; } }
+
+			public Vector3 DefaultGunForward { get { return _defaultGunForward; } }
 
 			public Transform FireTransform
 			{
@@ -100,6 +143,11 @@ namespace HunterTank
 					_currentFireTransformIndex = (int)(Mathf.Repeat(_currentFireTransformIndex, _fireTransforms.Count));
 					return _fireTransforms[_currentFireTransformIndex];
 				}
+			}
+
+			public void Init()
+			{
+				_defaultGunForward = RotationTransform.parent.InverseTransformDirection(RotationTransform.forward);
 			}
 		}
 	}

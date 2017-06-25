@@ -15,6 +15,9 @@ namespace HunterTank
 		public const string FireAxisName = "Fire1";
 
 		public const float MinSpawnInterval = 1f;
-		public const int MaxEnemies = 1;
+		public const int MaxEnemies = 10;
+
+		public const float MaxProjectileFlightTime = 20f;
+		public const float RayLengthForAiming = 1000f;
 	}
 }

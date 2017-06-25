@@ -18,7 +18,17 @@ namespace HunterTank
 		protected override void ProcessSpawnedItem(EnemyController itemToProcess)
 		{
 			base.ProcessSpawnedItem(itemToProcess);
+
 			_posNotifier.OnPositionChange += itemToProcess.SetPlayerPosition;
+			itemToProcess.OnDestroyed += OnDestroyed;
+		}
+
+		protected override void OnDestroyed(EnemyController destroyedItem)
+		{
+			base.OnDestroyed(destroyedItem);
+
+			_posNotifier.OnPositionChange -= destroyedItem.SetPlayerPosition;
+			destroyedItem.OnDestroyed -= OnDestroyed;
 		}
 	}
 }

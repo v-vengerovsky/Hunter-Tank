@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HunterTank
 {
-	public class Projectile : MonoBehaviour
+	public class Projectile : MonoBehaviour,ICollidable
 	{
 		[SerializeField]
 		private float _damage;
@@ -19,6 +19,15 @@ namespace HunterTank
 		[SerializeField]
 		private Collider _collider;
 
+		private float _flightTime;
+
+		public float Damage { get { return _damage; } }
+
+		public void Collide(ICollidable other)
+		{
+			Destroy(gameObject);
+		}
+
 		private void Start()
 		{
 			_rigidbody.velocity = transform.forward * _startSpeed;
@@ -29,6 +38,13 @@ namespace HunterTank
 		{
 			float currentSpeed = Mathf.Clamp( _rigidbody.velocity.magnitude + Time.fixedDeltaTime * _acceleration, _startSpeed, _maxSpeed);
 			_rigidbody.velocity = transform.forward * currentSpeed;
+
+			_flightTime += Time.fixedDeltaTime;
+
+			if (_flightTime > Constants.MaxProjectileFlightTime)
+			{
+				Destroy(gameObject);
+			}
 		}
 
 		private void OnTriggerExit(Collider other)
@@ -39,6 +55,15 @@ namespace HunterTank
 			{
 				_collider.isTrigger = false;
 			}
-		}		
+		}
+		private void OnCollisionEnter(Collision collision)
+		{
+			ICollidable other = collision.collider.GetComponent<ICollidable>();
+
+			if (other != null)
+			{
+				other.Collide(this);
+			}
+		}
 	}
 }

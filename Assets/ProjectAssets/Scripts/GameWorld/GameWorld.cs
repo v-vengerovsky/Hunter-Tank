@@ -29,8 +29,7 @@ namespace HunterTank
 			_enemySpawController = new EnemySpawnController(gameData,_playerController);
 			_enemySpawController.OnSpawn += _gameData.Spawn;
 			_enemySpawController.SpawnCondition += NeedToSpawn;
-
-			//_playerController.OnPositionChange += _gameData.SetPosition;
+			_playerController.OnDestroyed += PlayerDestroyed;
 		}
 
 		public void Update()
@@ -45,6 +44,16 @@ namespace HunterTank
 			_scoreSysytem.OnLoose -= Lost;
 			_enemySpawController.OnSpawn -= _gameData.Spawn;
 			_enemySpawController.SpawnCondition -= NeedToSpawn;
+		}
+
+		private void PlayerDestroyed(PlayerController playerController)
+		{
+			if (playerController != _playerController)
+			{
+				return;
+			}
+
+			Approot.Instance.SetState(new GameOverState());
 		}
 
 		private void Lost()

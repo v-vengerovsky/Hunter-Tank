@@ -6,15 +6,20 @@ using UnityEngine;
 namespace HunterTank
 {
 	[RequireComponent(typeof(VehicleController))]
-	public class PlayerController : MonoBehaviour,IPosNotifier
+	public class PlayerController : MonoBehaviour,IPosNotifier,ICollidable
 	{
 		[SerializeField]
 		private VehicleController _vehicleController;
 		[SerializeField]
 		private GunController _gunController;
+		[SerializeField]
+		private float _health;
+
+		private float _currentHealth;
 
 		private float _oldSwitchGunAxis;
 		private float _oldFireGunAxis;
+		private event Action<PlayerController> _onDestroyed;
 
 		public event Action<Vector3> OnPositionChange
 		{
@@ -22,9 +27,27 @@ namespace HunterTank
 			remove { _vehicleController.OnPositionChange -= value; }
 		}
 
-		private void Start()
+		public event Action<PlayerController> OnDestroyed
 		{
+			add { _onDestroyed += value; }
+			remove { _onDestroyed -= value; }
+		}
 
+		public float Damage { get { return float.MaxValue; } }
+
+		public void Collide(ICollidable other)
+		{
+			_currentHealth -= other.Damage;
+
+			if (_currentHealth <= 0)
+			{
+				Destroy(gameObject);
+			}
+		}
+
+		private void Awake()
+		{
+			_currentHealth = _health;
 		}
 
 		private void Update()
@@ -56,6 +79,24 @@ namespace HunterTank
 		private void Reset()
 		{
 			_vehicleController = GetComponent<VehicleController>();
+		}
+
+		private void OnCollisionEnter(Collision collision)
+		{
+			ICollidable other = collision.collider.GetComponent<ICollidable>();
+
+			if (other != null)
+			{
+				other.Collide(this);
+			}
+		}
+
+		private void OnDestroy()
+		{
+			if (_onDestroyed != null)
+			{
+				_onDestroyed.Invoke(this);
+			}
 		}
 	}
 }

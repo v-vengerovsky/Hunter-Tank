@@ -11,8 +11,6 @@ namespace HunterTank
 		[SerializeField]
 		private Button _restartBtn;
 
-		private int _score;
-
 		private event Action _onRestartPressed;
 
 		public event Action OnRestartPressed

@@ -68,5 +68,10 @@ namespace HunterTank
 		{
 
 		}
+
+		protected virtual void OnDestroyed(T destroyedItem)
+		{
+			_items.Remove(destroyedItem);
+		}
 	}
 }
