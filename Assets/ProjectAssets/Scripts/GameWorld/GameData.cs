@@ -16,6 +16,8 @@ namespace HunterTank
 		private List<EnemyController> _enemyControllersPrefabs;
 		[SerializeField]
 		private List<SpawnVolume> _spawnVolumes;
+		[SerializeField]
+		private EnemyMarkerView _enemyMarkerView;
 
 		private int _currentPlayercontrollerIndex = 0;
 
@@ -25,6 +27,9 @@ namespace HunterTank
 		{
 			get { return _instance; }
 		}
+
+		public EnemyMarkerView EnemyMarkerView { get { return _enemyMarkerView; } }
+		public Camera Camera { get { return _camera; } }
 
 		public T Spawn<T>(T original) where T : Component
 		{
@@ -53,7 +58,7 @@ namespace HunterTank
 			return _enemyControllersPrefabs[randomIndex];
 		}
 
-		public void SetPosition(Vector3 position)
+		public void SetPosition(IPosNotifier notifier, Vector3 position)
 		{
 			position.y = _camera.transform.position.y;
 			_camera.transform.position = position;

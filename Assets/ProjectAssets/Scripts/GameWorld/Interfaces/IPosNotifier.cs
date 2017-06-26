@@ -8,6 +8,7 @@ namespace HunterTank
 {
 	public interface IPosNotifier
 	{
-		event Action<Vector3> OnPositionChange;
+		int Id { get; }
+		event Action<IPosNotifier, Vector3> OnPositionChange;
 	}
 }

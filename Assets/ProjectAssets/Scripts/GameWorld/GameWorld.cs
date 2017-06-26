@@ -12,6 +12,7 @@ namespace HunterTank
 		private ScoreSystem _scoreSysytem;
 		private PlayerController _playerController;
 		private EnemySpawnController _enemySpawController;
+		private EnemyMarkerController _enemyMarkerController;
 
 		public event Action<int> OnScore
 		{
@@ -26,7 +27,10 @@ namespace HunterTank
 			_scoreSysytem.OnLoose += Lost;
 			_playerController = _gameData.GetPlayerController();
 			_playerController.OnPositionChange += _gameData.SetPosition;
-			_enemySpawController = new EnemySpawnController(gameData,_playerController);
+			_enemyMarkerController = new EnemyMarkerController(_gameData.EnemyMarkerView, _gameData.Camera);
+			//_enemyMarkerController
+			_playerController.OnPositionChange += _enemyMarkerController.NotifyPlayerPosition;
+			_enemySpawController = new EnemySpawnController(gameData, _playerController, _enemyMarkerController.NotifyPosition, _enemyMarkerController.AddNotifier, _enemyMarkerController.RemoveNotifier);
 			_enemySpawController.OnSpawn += _gameData.Spawn;
 			_enemySpawController.SpawnCondition += NeedToSpawn;
 			_playerController.OnDestroyed += PlayerDestroyed;
@@ -44,6 +48,7 @@ namespace HunterTank
 			_scoreSysytem.OnLoose -= Lost;
 			_enemySpawController.OnSpawn -= _gameData.Spawn;
 			_enemySpawController.SpawnCondition -= NeedToSpawn;
+			_enemySpawController.Dispose();
 		}
 
 		private void PlayerDestroyed(PlayerController playerController)

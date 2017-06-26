@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace HunterTank
 {
-	public class EnemyController : MonoBehaviour, ICollidable
+	public class EnemyController : MonoBehaviour, IPosNotifier, ICollidable
 	{
 		[SerializeField]
 		private VehicleController _vehicleController;
@@ -24,7 +24,15 @@ namespace HunterTank
 			remove { _onDestroyed -= value; }
 		}
 
-		public void SetPlayerPosition(Vector3 playerPos)
+		public int Id { get { return gameObject.GetInstanceID(); } }
+
+		public event Action<IPosNotifier,Vector3> OnPositionChange
+		{
+			add { _vehicleController.OnPositionChange += value; }
+			remove { _vehicleController.OnPositionChange -= value; }
+		}
+
+		public void SetPlayerPosition(IPosNotifier notifier, Vector3 playerPos)
 		{
 			Vector3 targetDir = playerPos - transform.position;
 			targetDir.Normalize();
@@ -39,6 +47,11 @@ namespace HunterTank
 
 			if (_currentHealth <= 0)
 			{
+				if (_onDestroyed != null)
+				{
+					_onDestroyed.Invoke(this);
+				}
+
 				Destroy(gameObject);
 			}
 		}
@@ -46,14 +59,6 @@ namespace HunterTank
 		private void Awake()
 		{
 			_currentHealth = _health;
-		}
-
-		private void OnDestroy()
-		{
-			if (_onDestroyed != null)
-			{
-				_onDestroyed.Invoke(this);
-			}
 		}
 
 		private void Reset()

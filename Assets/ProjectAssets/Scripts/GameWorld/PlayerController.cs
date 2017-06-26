@@ -21,7 +21,9 @@ namespace HunterTank
 		private float _oldFireGunAxis;
 		private event Action<PlayerController> _onDestroyed;
 
-		public event Action<Vector3> OnPositionChange
+		public int Id { get { return gameObject.GetInstanceID(); } }
+
+		public event Action<IPosNotifier,Vector3> OnPositionChange
 		{
 			add { _vehicleController.OnPositionChange += value; }
 			remove { _vehicleController.OnPositionChange -= value; }
@@ -41,6 +43,11 @@ namespace HunterTank
 
 			if (_currentHealth <= 0)
 			{
+				if (_onDestroyed != null)
+				{
+					_onDestroyed.Invoke(this);
+				}
+
 				Destroy(gameObject);
 			}
 		}
@@ -88,14 +95,6 @@ namespace HunterTank
 			if (other != null)
 			{
 				other.Collide(this);
-			}
-		}
-
-		private void OnDestroy()
-		{
-			if (_onDestroyed != null)
-			{
-				_onDestroyed.Invoke(this);
 			}
 		}
 	}

@@ -31,7 +31,7 @@ namespace HunterTank
 		private void Start()
 		{
 			_rigidbody.velocity = transform.forward * _startSpeed;
-			_collider.isTrigger = true;
+			_collider.isTrigger = false;
 		}
 
 		private void FixedUpdate()
@@ -47,15 +47,16 @@ namespace HunterTank
 			}
 		}
 
-		private void OnTriggerExit(Collider other)
-		{
-			var player = other.GetComponent<PlayerController>();
+		//private void OnTriggerExit(Collider other)
+		//{
+		//	var player = other.GetComponent<PlayerController>();
 
-			if (player != null)
-			{
-				_collider.isTrigger = false;
-			}
-		}
+		//	if (player != null)
+		//	{
+		//		_collider.isTrigger = false;
+		//	}
+		//}
+
 		private void OnCollisionEnter(Collision collision)
 		{
 			ICollidable other = collision.collider.GetComponent<ICollidable>();

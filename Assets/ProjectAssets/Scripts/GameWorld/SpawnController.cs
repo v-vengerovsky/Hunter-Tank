@@ -53,6 +53,11 @@ namespace HunterTank
 			}
 		}
 
+		public virtual void Dispose()
+		{
+
+		}
+
 		private void Spawn(T itemToSpawnn)
 		{
 			if (_onSpawn != null)
