@@ -53,6 +53,11 @@ namespace HunterTank
 
 		public void Collide(ICollidable other)
 		{
+			if (other is EnemyController)
+			{
+				return;
+			}
+
 			_currentHealth -= other.Damage * (1 - _armor);
 
 			if (_currentHealth <= 0)

@@ -20,9 +20,24 @@ namespace HunterTank
 				points[i] = transform.TransformPoint(_mesh.sharedMesh.vertices[i]);
 			}
 
-			result.transform.position = Utils.GetRandomPointInsideCloudOfPoints(points);
+			result.transform.position = CorrectPosition(Utils.GetRandomPointInsideCloudOfPoints(points));
 
 			return result;
+		}
+
+		private Vector3 CorrectPosition(Vector3 position)
+		{
+			Ray ray = new Ray(position, Vector3.down);
+			RaycastHit hit;
+			//Debug.DrawRay(position, Vector3.down*50f,Color.red,10f);
+			if (Physics.Raycast(ray, out hit, 50f,~LayerMask.NameToLayer("Ground")))
+			{
+				return hit.point;
+			}
+			else
+			{
+				return position;
+			}
 		}
 
 		private void Reset()
