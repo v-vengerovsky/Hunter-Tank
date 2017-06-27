@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using IEnemyPosNotifiable = HunterTank.IEnemyNotifiable<HunterTank.IPlayerNotifier>;
 
 namespace HunterTank
 {
-	public class EnemyMarkerController
+	public class EnemyMarkerController: IEnemyPosNotifiable
 	{
 		private EnemyMarkerView _view;
 		private Camera _camera;
@@ -21,12 +22,37 @@ namespace HunterTank
 			_camera = camera;
 		}
 
-		public void AddNotifier(IPosNotifier notifier)
+		public void OnSpawn(IPlayerNotifier enemy)
+		{
+			AddNotifier(enemy);
+		}
+
+		public void OnDestroy(IPlayerNotifier enemy)
+		{
+			RemoveNotifier(enemy);
+		}
+
+		public void Notify(IPlayerNotifier enemy)
+		{
+			NotifyEnemyPosition(enemy, enemy.Position);
+		}
+
+		public void NotifyPlayer(IPlayerNotifier notifier)
+		{
+			_playerPos = notifier.Position;
+		}
+
+		private void NotifyEnemyPosition(IPlayerNotifier notifier, Vector3 position)
+		{
+			SetImageTransform(_notifiers[notifier.Id], _playerPos, position);
+		}
+
+		private void AddNotifier(IPlayerNotifier notifier)
 		{
 			_notifiers.Add(notifier.Id, CreateImage());
 		}
 
-		public void RemoveNotifier(IPosNotifier notifier)
+		private void RemoveNotifier(IPlayerNotifier notifier)
 		{
 			GameObject.Destroy(_notifiers[notifier.Id].gameObject);
 			_notifiers.Remove(notifier.Id);
@@ -43,34 +69,17 @@ namespace HunterTank
 			return result;
 		}
 
-		public void NotifyPlayerPosition(IPosNotifier notifier, Vector3 position)
-		{
-			_playerPos = position;
-		}
-
-		public void NotifyPosition(IPosNotifier notifier, Vector3 position)
-		{
-			SetImageTransform(_notifiers[notifier.Id], _playerPos, position);
-		}
-
 		private void SetImageTransform(Image image, Vector3 origin, Vector3 target)
 		{
 			Vector3 viewPortOrigin = _camera.WorldToViewportPoint(origin);
 			Vector3 viewPortTarget = _camera.WorldToViewportPoint(target);
 			Vector3 imagePos = viewPortTarget - viewPortOrigin;
 			imagePos.z = 0f;
-			//imagePos.x = Mathf.Clamp01(imagePos.x);
-			//imagePos.y = Mathf.Clamp01(imagePos.y);
-			//imagePos = imagePos.normalized/2;
-			image.gameObject.SetActive(imagePos.magnitude > 1f);
+			float imagePosNoNormalize = imagePos.magnitude;
 
-			imagePos = imagePos.normalized/2;
+			imagePos = imagePos.normalized / 2;
 
-			//imagePos.Normalize();
-
-
-			Vector3 viewportCenter = new Vector3(0.5f, 0.5f,0f);
-			//imagePos += viewportCenter;
+			Vector3 viewportCenter = new Vector3(0.5f, 0.5f, 0f);
 			float angle = Vector3.Angle(imagePos, Vector3.right) + _view.ArrowOffsetAngle;
 
 			if (imagePos.y < 0)
@@ -80,7 +89,9 @@ namespace HunterTank
 			float tempAngle = Math.Min(angle % 90f, 90f - (angle % 90f));
 			float magnitude = 1f / Mathf.Cos(tempAngle / 180 * Mathf.PI);
 			imagePos = magnitude * imagePos + viewportCenter;
-				 
+
+			image.gameObject.SetActive(imagePosNoNormalize > magnitude);
+
 			image.rectTransform.anchorMax = imagePos;
 			image.rectTransform.anchorMin = imagePos;
 			image.rectTransform.anchoredPosition = Vector2.zero;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HunterTank
 {
-	public class Projectile : MonoBehaviour,ICollidable
+	public class Projectile : Collidable
 	{
 		[SerializeField]
 		private float _damage;
@@ -21,9 +21,9 @@ namespace HunterTank
 
 		private float _flightTime;
 
-		public float Damage { get { return _damage; } }
+		public override float Damage { get { return _damage; } }
 
-		public void Collide(ICollidable other)
+		public override void Collide(ICollidable other)
 		{
 			Destroy(gameObject);
 		}
@@ -46,16 +46,6 @@ namespace HunterTank
 				Destroy(gameObject);
 			}
 		}
-
-		//private void OnTriggerExit(Collider other)
-		//{
-		//	var player = other.GetComponent<PlayerController>();
-
-		//	if (player != null)
-		//	{
-		//		_collider.isTrigger = false;
-		//	}
-		//}
 
 		private void OnCollisionEnter(Collision collision)
 		{

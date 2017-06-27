@@ -2,18 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using IPlayerNotifierEvent = HunterTank.INotifierEvent<HunterTank.IPlayerNotifier>;
 
 namespace HunterTank
 {
 	[RequireComponent(typeof(VehicleController))]
-	public class PlayerController : MonoBehaviour,IPosNotifier,ICollidable
+	public class PlayerController : MonoBehaviour, IPlayerNotifier, IPlayerNotifierEvent, ICollidable
 	{
 		[SerializeField]
 		private VehicleController _vehicleController;
+		//[SerializeField]
+		//private health
 		[SerializeField]
 		private GunController _gunController;
 		[SerializeField]
 		private float _health;
+		[SerializeField]
+		[Range(0f, 1f)]
+		private float _armor;
 
 		private float _currentHealth;
 
@@ -23,10 +29,16 @@ namespace HunterTank
 
 		public int Id { get { return gameObject.GetInstanceID(); } }
 
-		public event Action<IPosNotifier,Vector3> OnPositionChange
+		public Vector3 Position { get { return _vehicleController.Position; } }
+
+		public RangeFloat RangeFloat { get { return new RangeFloat(_currentHealth, _health); } }
+
+		private event Action<IPlayerNotifier> _onNotify;
+
+		public event Action<IPlayerNotifier> OnNotify
 		{
-			add { _vehicleController.OnPositionChange += value; }
-			remove { _vehicleController.OnPositionChange -= value; }
+			add { _onNotify += value; }
+			remove { _onNotify -= value; }
 		}
 
 		public event Action<PlayerController> OnDestroyed
@@ -39,7 +51,7 @@ namespace HunterTank
 
 		public void Collide(ICollidable other)
 		{
-			_currentHealth -= other.Damage;
+			_currentHealth -= other.Damage * (1 - _armor);
 
 			if (_currentHealth <= 0)
 			{
@@ -52,9 +64,18 @@ namespace HunterTank
 			}
 		}
 
+		private void Notify()
+		{
+			if (_onNotify != null)
+			{
+				_onNotify.Invoke(this);
+			}
+		}
+
 		private void Awake()
 		{
 			_currentHealth = _health;
+			_vehicleController.OnNotify += Notify;
 		}
 
 		private void Update()

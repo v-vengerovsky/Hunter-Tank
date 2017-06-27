@@ -6,7 +6,7 @@ using UnityEngine;
 namespace HunterTank
 {
 	[RequireComponent(typeof(VehicleAnimator))]
-	public class VehicleController : MonoBehaviour, IPosNotifier
+	public class VehicleController : MonoBehaviour
 	{
 		[SerializeField]
 		private float _maxSpeed = 30f;
@@ -22,9 +22,11 @@ namespace HunterTank
 
 		public int Id { get { return gameObject.GetInstanceID(); } }
 
-		private event Action<IPosNotifier,Vector3> _onPositionChange;
+		public Vector3 Position { get { return CurrentPosition; } }
 
-		public event Action<IPosNotifier,Vector3> OnPositionChange
+		private event Action _onPositionChange;
+
+		public event Action OnNotify
 		{
 			add { _onPositionChange += value; }
 			remove { _onPositionChange -= value; }
@@ -70,7 +72,7 @@ namespace HunterTank
 			}
 		}
 
-		private Vector3 Position
+		private Vector3 CurrentPosition
 		{
 			get { return transform.position; }
 			set { transform.position = value; }
@@ -132,11 +134,11 @@ namespace HunterTank
 
 		private void UpdatePosition()
 		{
-			Position = Position + CurrentVelocity * Time.fixedDeltaTime;
+			CurrentPosition = CurrentPosition + CurrentVelocity * Time.fixedDeltaTime;
 
 			if (_onPositionChange != null)
 			{
-				_onPositionChange(this, Position);
+				_onPositionChange.Invoke();
 			}
 		}
 

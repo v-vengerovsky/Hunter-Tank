@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using IEnemyPosNotifiable = HunterTank.IEnemyNotifiable<HunterTank.IPlayerNotifier>;
 
 namespace HunterTank
 {
@@ -13,6 +14,7 @@ namespace HunterTank
 		private PlayerController _playerController;
 		private EnemySpawnController _enemySpawController;
 		private EnemyMarkerController _enemyMarkerController;
+		private HealthController _healthController;
 
 		public event Action<int> OnScore
 		{
@@ -26,11 +28,13 @@ namespace HunterTank
 			_scoreSysytem = new ScoreSystem();
 			_scoreSysytem.OnLoose += Lost;
 			_playerController = _gameData.GetPlayerController();
-			_playerController.OnPositionChange += _gameData.SetPosition;
+			_playerController.OnNotify += _gameData.SetPosition;
 			_enemyMarkerController = new EnemyMarkerController(_gameData.EnemyMarkerView, _gameData.Camera);
-			//_enemyMarkerController
-			_playerController.OnPositionChange += _enemyMarkerController.NotifyPlayerPosition;
-			_enemySpawController = new EnemySpawnController(gameData, _playerController, _enemyMarkerController.NotifyPosition, _enemyMarkerController.AddNotifier, _enemyMarkerController.RemoveNotifier);
+			_playerController.OnNotify += _enemyMarkerController.NotifyPlayer;
+			_healthController = new HealthController(_gameData.HealthView,_gameData.Camera);
+			_healthController.OnSpawn(_playerController);
+			_playerController.OnNotify += _healthController.Notify;
+			_enemySpawController = new EnemySpawnController(gameData, _playerController, new IEnemyPosNotifiable[]{ _enemyMarkerController, _healthController });
 			_enemySpawController.OnSpawn += _gameData.Spawn;
 			_enemySpawController.SpawnCondition += NeedToSpawn;
 			_playerController.OnDestroyed += PlayerDestroyed;
@@ -44,7 +48,7 @@ namespace HunterTank
 
 		public void Dispose()
 		{
-			_playerController.OnPositionChange -= _gameData.SetPosition;
+			_playerController.OnNotify -= _gameData.SetPosition;
 			_scoreSysytem.OnLoose -= Lost;
 			_enemySpawController.OnSpawn -= _gameData.Spawn;
 			_enemySpawController.SpawnCondition -= NeedToSpawn;

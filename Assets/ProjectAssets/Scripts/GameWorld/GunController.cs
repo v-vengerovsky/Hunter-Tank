@@ -87,7 +87,7 @@ namespace HunterTank
 				}
 			}
 
-			CurrentGun.RotationTransform.forward = CurrentGun.RotationTransform.parent.TransformDirection(CurrentGun.DefaultGunForward);
+			//CurrentGun.RotationTransform.forward = CurrentGun.RotationTransform.parent.TransformDirection(CurrentGun.DefaultGunForward);
 		}
 
 		private Gun CurrentGun

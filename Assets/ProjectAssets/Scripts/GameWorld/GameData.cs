@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//using IPosNotifier = HunterTank.INotifier<UnityEngine.Vector3>;
+//using IFloatNotifier = HunterTank.INotifier<float>;
 
 namespace HunterTank
 {
@@ -18,6 +20,8 @@ namespace HunterTank
 		private List<SpawnVolume> _spawnVolumes;
 		[SerializeField]
 		private EnemyMarkerView _enemyMarkerView;
+		[SerializeField]
+		private HealthView _healthView;
 
 		private int _currentPlayercontrollerIndex = 0;
 
@@ -29,6 +33,7 @@ namespace HunterTank
 		}
 
 		public EnemyMarkerView EnemyMarkerView { get { return _enemyMarkerView; } }
+		public HealthView HealthView { get { return _healthView; } }
 		public Camera Camera { get { return _camera; } }
 
 		public T Spawn<T>(T original) where T : Component
@@ -58,8 +63,9 @@ namespace HunterTank
 			return _enemyControllersPrefabs[randomIndex];
 		}
 
-		public void SetPosition(IPosNotifier notifier, Vector3 position)
+		public void SetPosition(IPlayerNotifier notifier)
 		{
+			Vector3 position = notifier.Position;
 			position.y = _camera.transform.position.y;
 			_camera.transform.position = position;
 		}

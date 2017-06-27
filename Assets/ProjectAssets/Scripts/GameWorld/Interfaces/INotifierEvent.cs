@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace HunterTank
 {
-	public interface IPosNotifier:INotifier
+	public interface INotifierEvent<T> where T : INotifier
 	{
-		Vector3 Position { get; }
+		event Action<T> OnNotify;
 	}
 }

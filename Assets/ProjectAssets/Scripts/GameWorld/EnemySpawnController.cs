@@ -3,56 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using IPlayerNotifierEvent = HunterTank.INotifierEvent<HunterTank.IPlayerNotifier>;
+using IEnemyPosNotifiable = HunterTank.IEnemyNotifiable<HunterTank.IPlayerNotifier>;
 
 namespace HunterTank
 {
 	public class EnemySpawnController : SpawnController<EnemyController>
 	{
-		private IPosNotifier _posNotifier;
-		private Action<IPosNotifier,Vector3> _notify;
-		private Action<IPosNotifier> _onSpawn;
-		private Action<IPosNotifier> _onDestroy;
+		private IEnumerable<IEnemyPosNotifiable> _enemyNotifiables;
+		private IPlayerNotifierEvent _playerNotifier;
 
-		public EnemySpawnController(ISpawnItemSource<EnemyController> spawnItemSource,IPosNotifier posNotifier, Action<IPosNotifier,Vector3> notify, Action<IPosNotifier> onSpawn, Action<IPosNotifier> onDestroy) : base(spawnItemSource)
+		public EnemySpawnController(ISpawnItemSource<EnemyController> spawnItemSource, IPlayerNotifierEvent playerNotifier, IEnumerable<IEnemyPosNotifiable> enemyNotifiables) : base(spawnItemSource)
 		{
-			_posNotifier = posNotifier;
-			_notify = notify;
-			_onSpawn = onSpawn;
-			_onDestroy = onDestroy;
+			_enemyNotifiables = enemyNotifiables;
+			_playerNotifier = playerNotifier;
 		}
 
 		protected override void ProcessSpawnedItem(EnemyController itemToProcess)
 		{
 			base.ProcessSpawnedItem(itemToProcess);
 
-			_posNotifier.OnPositionChange += itemToProcess.SetPlayerPosition;
-			itemToProcess.OnPositionChange += _notify;
-			itemToProcess.OnDestroyed += OnDestroyed;
+			_playerNotifier.OnNotify += itemToProcess.SetPlayerPosition;
 
-			if (_onSpawn != null)
+			foreach (var item in _enemyNotifiables)
 			{
-				_onSpawn.Invoke(itemToProcess);
+				itemToProcess.OnNotify += item.Notify;
+				item.OnSpawn(itemToProcess);
 			}
+
+			itemToProcess.OnDestroyed += OnDestroyed;
 		}
 
 		protected override void OnDestroyed(EnemyController destroyedItem)
 		{
 			base.OnDestroyed(destroyedItem);
 
-			_posNotifier.OnPositionChange -= destroyedItem.SetPlayerPosition;
-			destroyedItem.OnPositionChange -= _notify;
-			destroyedItem.OnDestroyed -= OnDestroyed;
-
-			if (_onDestroy != null)
+			_playerNotifier.OnNotify -= destroyedItem.SetPlayerPosition;
+			foreach (var item in _enemyNotifiables)
 			{
-				_onDestroy.Invoke(destroyedItem);
+				destroyedItem.OnNotify += item.Notify;
+				item.OnDestroy(destroyedItem);
 			}
-		}
 
-		public override void Dispose()
-		{
-			base.Dispose();
-			_notify = null;
+			destroyedItem.OnDestroyed -= OnDestroyed;
 		}
 	}
 }

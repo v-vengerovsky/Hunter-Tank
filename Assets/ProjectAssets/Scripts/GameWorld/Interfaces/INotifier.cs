@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace HunterTank
 {
-	public interface IPosNotifier:INotifier
+	public interface INotifier
 	{
-		Vector3 Position { get; }
+		int Id { get; }
 	}
 }

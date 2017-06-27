@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using IPlayerNotifierEvent = HunterTank.INotifierEvent<HunterTank.IPlayerNotifier>;
 
 namespace HunterTank
 {
-	public class EnemyController : MonoBehaviour, IPosNotifier, ICollidable
+	public class EnemyController : MonoBehaviour, IPlayerNotifier, IPlayerNotifierEvent, ICollidable
 	{
 		[SerializeField]
 		private VehicleController _vehicleController;
@@ -13,6 +14,9 @@ namespace HunterTank
 		private float _damage;
 		[SerializeField]
 		private float _health;
+		[SerializeField]
+		[Range(0f,1f)]
+		private float _armor;
 
 		private float _currentHealth;
 
@@ -26,15 +30,21 @@ namespace HunterTank
 
 		public int Id { get { return gameObject.GetInstanceID(); } }
 
-		public event Action<IPosNotifier,Vector3> OnPositionChange
+		public Vector3 Position { get { return _vehicleController.Position; } }
+
+		public RangeFloat RangeFloat { get { return new RangeFloat(_currentHealth,_health); } }
+
+		private event Action<IPlayerNotifier> _onNotify;
+
+		public event Action<IPlayerNotifier> OnNotify
 		{
-			add { _vehicleController.OnPositionChange += value; }
-			remove { _vehicleController.OnPositionChange -= value; }
+			add { _onNotify += value; }
+			remove { _onNotify -= value; }
 		}
 
-		public void SetPlayerPosition(IPosNotifier notifier, Vector3 playerPos)
+		public void SetPlayerPosition(IPlayerNotifier notifier)
 		{
-			Vector3 targetDir = playerPos - transform.position;
+			Vector3 targetDir = notifier.Position - transform.position;
 			targetDir.Normalize();
 			_vehicleController.TargetDirection = targetDir;
 		}
@@ -43,7 +53,7 @@ namespace HunterTank
 
 		public void Collide(ICollidable other)
 		{
-			_currentHealth -= other.Damage;
+			_currentHealth -= other.Damage * (1 - _armor);
 
 			if (_currentHealth <= 0)
 			{
@@ -56,9 +66,18 @@ namespace HunterTank
 			}
 		}
 
+		private void Notify()
+		{
+			if (_onNotify != null)
+			{
+				_onNotify(this);
+			}
+		}
+
 		private void Awake()
 		{
 			_currentHealth = _health;
+			_vehicleController.OnNotify += Notify;
 		}
 
 		private void Reset()
