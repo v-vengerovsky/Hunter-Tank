@@ -19,5 +19,8 @@ namespace HunterTank
 
 		public const float MaxProjectileFlightTime = 20f;
 		public const float RayLengthForAiming = 1000f;
+
+		public const string GameOverScoreFormat = "You scored {0} frags";
+		public const string ScoreFormat = "<b>{0}</b>";
 	}
 }

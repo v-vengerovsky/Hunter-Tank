@@ -20,9 +20,9 @@ namespace HunterTank
 
 		private float _currentHealth;
 
-		private event Action<EnemyController> _onDestroyed;
+		private event Action<EnemyController, ICollidable> _onDestroyed;
 
-		public event Action<EnemyController> OnDestroyed
+		public event Action<EnemyController, ICollidable> OnDestroyed
 		{
 			add { _onDestroyed += value; }
 			remove { _onDestroyed -= value; }
@@ -64,7 +64,7 @@ namespace HunterTank
 			{
 				if (_onDestroyed != null)
 				{
-					_onDestroyed.Invoke(this);
+					_onDestroyed.Invoke(this, other);
 				}
 
 				Destroy(gameObject);

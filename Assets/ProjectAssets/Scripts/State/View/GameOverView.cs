@@ -10,6 +10,10 @@ namespace HunterTank
 	{
 		[SerializeField]
 		private Button _restartBtn;
+		[SerializeField]
+		private Text _scoreText;
+
+		private int _score;
 
 		private event Action _onRestartPressed;
 
@@ -17,6 +21,16 @@ namespace HunterTank
 		{
 			add { _onRestartPressed += value; }
 			remove { _onRestartPressed -= value; }
+		}
+
+		public int Score
+		{
+			get { return _score; }
+			set
+			{
+				_score = value;
+				_scoreText.text = string.Format(Constants.GameOverScoreFormat, value);
+			}
 		}
 
 		private void Awake()

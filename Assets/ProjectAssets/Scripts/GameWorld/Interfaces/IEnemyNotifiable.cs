@@ -11,7 +11,7 @@ namespace HunterTank
 	public interface IEnemyNotifiable<T> where T: INotifier
 	{
 		void OnSpawn(T enemy);
-		void OnDestroy(T enemy);
+		void OnDestroy(T enemy, ICollidable other);
 		void Notify(T enemy);
 	}
 }

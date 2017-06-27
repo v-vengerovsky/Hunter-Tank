@@ -34,7 +34,7 @@ namespace HunterTank
 			_healthController = new HealthController(_gameData.HealthView,_gameData.Camera);
 			_healthController.OnSpawn(_playerController);
 			_playerController.OnNotify += _healthController.Notify;
-			_enemySpawController = new EnemySpawnController(gameData, _playerController, new IEnemyPosNotifiable[]{ _enemyMarkerController, _healthController });
+			_enemySpawController = new EnemySpawnController(gameData, _playerController, new IEnemyPosNotifiable[]{ _enemyMarkerController, _healthController , _scoreSysytem });
 			_enemySpawController.OnSpawn += _gameData.Spawn;
 			_enemySpawController.SpawnCondition += NeedToSpawn;
 			_playerController.OnDestroyed += PlayerDestroyed;
@@ -55,14 +55,14 @@ namespace HunterTank
 			_enemySpawController.Dispose();
 		}
 
-		private void PlayerDestroyed(PlayerController playerController)
+		private void PlayerDestroyed(PlayerController playerController, ICollidable other)
 		{
 			if (playerController != _playerController)
 			{
 				return;
 			}
 
-			Approot.Instance.SetState(new GameOverState());
+			Approot.Instance.SetState(new GameOverState(_scoreSysytem.Score));
 		}
 
 		private void Lost()

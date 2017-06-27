@@ -25,7 +25,7 @@ namespace HunterTank
 			AddNotifier(enemy);
 		}
 
-		public void OnDestroy(IPlayerNotifier enemy)
+		public void OnDestroy(IPlayerNotifier enemy, ICollidable other)
 		{
 			RemoveNotifier(enemy);
 		}

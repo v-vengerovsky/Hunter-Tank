@@ -18,11 +18,13 @@ namespace HunterTank
 		{
 			base.OnActivate();
 			_gameWorld = new GameWorld(GameData.Instance);
+			_gameWorld.OnScore += _view.SetScore;
 		}
 
 		public override void OnDeactivate()
 		{
 			base.OnDeactivate();
+			_gameWorld.OnScore -= _view.SetScore;
 			_gameWorld.Dispose();
 		}
 

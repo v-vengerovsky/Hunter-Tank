@@ -34,15 +34,15 @@ namespace HunterTank
 			itemToProcess.OnDestroyed += OnDestroyed;
 		}
 
-		protected override void OnDestroyed(EnemyController destroyedItem)
+		protected override void OnDestroyed(EnemyController destroyedItem, ICollidable other)
 		{
-			base.OnDestroyed(destroyedItem);
+			base.OnDestroyed(destroyedItem, other);
 
 			_playerNotifier.OnNotify -= destroyedItem.SetPlayerPosition;
 			foreach (var item in _enemyNotifiables)
 			{
 				destroyedItem.OnNotify += item.Notify;
-				item.OnDestroy(destroyedItem);
+				item.OnDestroy(destroyedItem, other);
 			}
 
 			destroyedItem.OnDestroyed -= OnDestroyed;

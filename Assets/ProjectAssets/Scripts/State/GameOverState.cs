@@ -7,6 +7,7 @@ namespace HunterTank
 	public class GameOverState : StateBase
 	{
 		private GameOverView _view;
+		private int _score;
 
 		public GameOverState() : base(Approot.Instance.SceneLoader.Scenes.Find(scene => scene.SceneName == "GameOver").SceneName)
 		{
@@ -15,12 +16,13 @@ namespace HunterTank
 
 		public GameOverState(int score) : this()
 		{
-
+			_score = score;
 		}
 
 		public override void OnActivate()
 		{
 			base.OnActivate();
+			_view.Score = _score;
 			_view.OnRestartPressed += Restart;
 		}
 

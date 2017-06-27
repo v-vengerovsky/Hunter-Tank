@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using IEnemyPosNotifiable = HunterTank.IEnemyNotifiable<HunterTank.IPlayerNotifier>;
 
 namespace HunterTank
 {
-	public class ScoreSystem
+	public class ScoreSystem:IEnemyPosNotifiable
 	{
 		private int _score = 0;
 
@@ -35,6 +36,29 @@ namespace HunterTank
 		public void Update()
 		{
 
+		}
+
+		public void OnSpawn(IPlayerNotifier enemy)
+		{
+			
+		}
+
+		public void OnDestroy(IPlayerNotifier enemy, ICollidable other)
+		{
+			if (other is Projectile)
+			{
+				_score++;
+
+				if (_onScore != null)
+				{
+					_onScore(Score);
+				}
+			}
+		}
+
+		public void Notify(IPlayerNotifier enemy)
+		{
+			
 		}
 	}
 }

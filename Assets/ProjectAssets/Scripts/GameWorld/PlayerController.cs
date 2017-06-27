@@ -25,7 +25,6 @@ namespace HunterTank
 
 		private float _oldSwitchGunAxis;
 		private float _oldFireGunAxis;
-		private event Action<PlayerController> _onDestroyed;
 
 		public int Id { get { return gameObject.GetInstanceID(); } }
 
@@ -41,7 +40,9 @@ namespace HunterTank
 			remove { _onNotify -= value; }
 		}
 
-		public event Action<PlayerController> OnDestroyed
+		private event Action<PlayerController, ICollidable> _onDestroyed;
+
+		public event Action<PlayerController, ICollidable> OnDestroyed
 		{
 			add { _onDestroyed += value; }
 			remove { _onDestroyed -= value; }
@@ -57,7 +58,7 @@ namespace HunterTank
 			{
 				if (_onDestroyed != null)
 				{
-					_onDestroyed.Invoke(this);
+					_onDestroyed.Invoke(this, other);
 				}
 
 				Destroy(gameObject);

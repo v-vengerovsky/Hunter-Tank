@@ -74,7 +74,7 @@ namespace HunterTank
 
 		}
 
-		protected virtual void OnDestroyed(T destroyedItem)
+		protected virtual void OnDestroyed(T destroyedItem, ICollidable other)
 		{
 			_items.Remove(destroyedItem);
 		}
