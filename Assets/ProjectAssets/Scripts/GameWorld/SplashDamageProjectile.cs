@@ -14,6 +14,8 @@ namespace HunterTank
 		private float _splashRadius;
 		[SerializeField]
 		private float _zOffset;
+		[SerializeField]
+		private ParticleSystem _explosion;
 
 		private SphereCollider _triggerSplash;
 
@@ -30,6 +32,8 @@ namespace HunterTank
 		{
 			_triggerSplash.isTrigger = false;
 			_triggerSplash.radius = _splashRadius;
+			var explosion = Instantiate(_explosion);
+			explosion.transform.position = transform.TransformPoint(new Vector3(0f, 0f, _zOffset));
 		}
 	}
 }

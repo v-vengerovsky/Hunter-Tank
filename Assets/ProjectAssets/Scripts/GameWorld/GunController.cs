@@ -39,6 +39,20 @@ namespace HunterTank
 			projectile.transform.position = CurrentGun.FireTransform.position;
 			projectile.transform.rotation = CurrentGun.FireTransform.rotation;
 			_timeToReload = CurrentGun.ReloadTime;
+			CollectAllInactiveExplosions();
+		}
+
+		private void CollectAllInactiveExplosions()
+		{
+			var explosions = new List<ParticleSystem>(FindObjectsOfType<ParticleSystem>());
+
+			foreach (var item in explosions)
+			{
+				if (!item.IsAlive())
+				{
+					Destroy(item.gameObject);
+				}
+			}
 		}
 
 		private void ShowGunAt(int index)
