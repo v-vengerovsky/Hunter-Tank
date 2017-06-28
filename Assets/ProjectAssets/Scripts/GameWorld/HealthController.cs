@@ -66,15 +66,11 @@ namespace HunterTank
 		{
 			Vector3 viewPortTarget = _camera.WorldToViewportPoint(target);
 			Vector3 viewportCenter = new Vector3(0.5f, 0.5f, 0f);
-			Vector3 imagePos = viewPortTarget;// - viewportCenter;
 			viewPortTarget.z = 0f;
-			image.gameObject.SetActive(viewPortTarget.magnitude < 1f);
-
-			//imagePos = imagePos.normalized / 2+ viewportCenter;
+			image.gameObject.SetActive(viewPortTarget.x > 0f && viewPortTarget.x < 1f && viewPortTarget.y > 0f && viewPortTarget.y < 1f);
 
 			image.rectTransform.anchorMax = viewPortTarget;
 			image.rectTransform.anchorMin = viewPortTarget;
-			//image.rectTransform.anchoredPosition = _view.Offset;
 
 			image.rectTransform.sizeDelta = _view.GetSize(fill);
 			image.color = _view.GetColor(fill);

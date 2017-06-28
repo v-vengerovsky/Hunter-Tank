@@ -28,7 +28,7 @@ namespace HunterTank
 			Destroy(gameObject);
 		}
 
-		private void Start()
+		protected virtual void Start()
 		{
 			_rigidbody.velocity = transform.forward * _startSpeed;
 			_collider.isTrigger = false;
